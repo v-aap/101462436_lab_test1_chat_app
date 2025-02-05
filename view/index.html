@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Selection</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container mt-4">
+    <h2 class="text-center">Welcome to Chat App</h2>
+
+    <!-- Logout Button -->
+    <button id="logoutBtn" class="btn btn-danger float-right">Logout</button>
+
+    <div class="row mt-4">
+      <!-- Create & Join Group Section -->
+      <div class="col-md-6">
+        <h4>Create a New Room</h4>
+        <div class="input-group mb-3">
+          <input type="text" id="newGroupInput" class="form-control rounded" placeholder="Enter group name">
+          <div class="input-group-append">
+            <button id="createGroupBtn" class="btn btn-success">Create</button>
+          </div>
+        </div>
+
+        <h4>Existing Rooms</h4>
+        <ul id="groupList" class="list-group rounded shadow-sm">
+          <!-- Groups will be inserted here -->
+        </ul>
+      </div>
+
+      <!-- Start Private Conversation -->
+      <div class="col-md-6">
+        <h4>Start New Chat</h4>
+        <div class="input-group">
+          <select id="userDropdown" class="form-control rounded">
+            <option value="">Select a user</option>
+          </select>
+          <div class="input-group-append">
+            <button id="startPrivateChatBtn" class="btn btn-primary">Start Chat</button>
+          </div>
+        </div>
+
+        <h4 class="mt-4">Your Chats</h4>
+        <ul id="privateChatList" class="list-group rounded shadow-sm">
+          <!-- Private chats will be inserted here dynamically -->
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      const user = JSON.parse(localStorage.getItem('user'));
+
+      if (!user || !user.username) {
+        window.location.href = '/login.html'; 
+      }
+
+      // Logout function
+      $('#logoutBtn').on('click', function() {
+        localStorage.removeItem('user');
+        window.location.href = '/login.html';
+      });
+
+      // Fetch existing groups
+      $.get('/api/groups', function(groups) {
+        const uniqueGroups = [...new Set(groups)];
+        $('#groupList').empty();
+        uniqueGroups.forEach(group => {
+          $('#groupList').append(`
+            <li class="list-group-item group-item d-flex justify-content-between align-items-center" data-chat="${group}">
+              ${group}
+              <span class="arrow-icon">&#9654;</span>
+            </li>
+          `);
+        });
+      });
+
+      // Fetch users for private chat
+      $.get('/api/users', function(users) {
+        users.forEach(user => {
+          $('#userDropdown').append(`<option value="${user.username}">${user.username}</option>`);
+        });
+      });
+
+      // Fetch existing private chats
+      if (user && user.username) {
+        $.get(`/api/users/privateChats/${user.username}`, function(privateChats) {
+          $('#privateChatList').empty(); 
+          privateChats.forEach(chatUser => {
+            $('#privateChatList').append(`
+              <li class="list-group-item private-chat-item d-flex justify-content-between align-items-center" data-chat="${chatUser}">
+                ${chatUser}
+                <span class="arrow-icon">&#9654;</span>
+              </li>
+            `);
+          });
+        });
+      }
+
+      // Open a private chat
+      $(document).on('click', '.private-chat-item', function() {
+        const selectedUser = $(this).data('chat');
+        window.location.href = `/private.html?user=${selectedUser}`;
+      });
+
+      // Start private chat
+      $('#startPrivateChatBtn').on('click', function() {
+        const selectedUser = $('#userDropdown').val();
+        if (!selectedUser) return alert('Select a user first.');
+        window.location.href = `/private.html?user=${selectedUser}`;
+      });
+
+      // Redirect to group chat
+      $(document).on('click', '.group-item', function() {
+        const groupName = $(this).data('chat');
+        window.location.href = `/group.html?room=${groupName}`;
+      });
+    });
+  </script>
+
+</body>
+</html>

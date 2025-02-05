@@ -1,0 +1,218 @@
+/* 🌟 General Styles */
+body {
+    background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
+}
+
+/* Centered Header */
+h2 {
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* 🎨 Chat List Styling */
+.list-group {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Chat Items */
+.chat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    font-size: 18px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    transition: background 0.3s ease-in-out, transform 0.2s ease;
+    cursor: pointer;
+}
+
+/* Hover Effect */
+.chat-item:hover {
+    background-color: #e9ecef;
+    transform: scale(1.02);
+}
+
+/* Arrow Icons */
+.arrow-icon {
+    font-size: 20px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* 🔹 Input Fields & Select Dropdown */
+input, select {
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+
+/* 🔘 Buttons */
+.btn {
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-size: 16px;
+}
+
+/* Logout Button */
+#logoutBtn {
+    font-size: 16px;
+    padding: 8px 15px;
+    border-radius: 8px;
+}
+
+/* 📌 Ensure Button & Inputs Alignment */
+.input-group {
+    display: flex;
+    align-items: center;
+}
+
+.input-group .form-control {
+    flex: 1;
+}
+
+/* 📝 Chat Box */
+.chat-box {
+    height: 400px;
+    overflow-y: auto;
+    padding: 15px;
+    border-radius: 10px;
+    background: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;
+}
+
+/* 💬 Message Bubbles */
+.message-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.message-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+
+/* ✅ Bold username */
+.username {
+    font-weight: bold;
+}
+
+/* ✅ Style time */
+.message-time {
+    font-size: 14px;
+    color: #666;
+}
+
+/* ✅ Ensure chat bubble is below username/time */
+.message {
+    padding: 10px 15px;
+    border-radius: 20px;
+    display: inline-block;
+    word-wrap: break-word;
+    max-width: 60%;
+    font-size: 16px;
+}
+
+/* Sent Messages (left-aligned) */
+.message-container.sent {
+    align-items: flex-end;
+}
+
+.message.sent {
+    background: #007aff;
+    color: white;
+}
+
+/* Received Messages (right-aligned) */
+.message-container.received {
+    align-items: flex-start;
+}
+
+.message.received {
+    background: #e5e5ea;
+    color: black;
+}
+
+/* 📅 Date Separator */
+.chat-date {
+    text-align: center;
+    font-size: 14px;
+    color: #555;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+/* 🔧 Chat Container */
+.chat-container {
+    position: relative;
+    padding-top: 10px;
+}
+
+/* ❌ Exit Button - Adjusted Properly */
+.exit-button {
+    position: absolute;
+    top: 5px; /* ✅ Adjusted for better alignment */
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 36px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #333;
+    transition: color 0.3s ease;
+    z-index: 1000;
+}
+
+/* Exit Button Hover Effect */
+.exit-button:hover {
+    color: red;
+}
+
+/* ✅ Bold Group Chat Name */
+.group-chat-title {
+    font-weight: bold;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+/* 📜 Rounded List Items */
+.list-group-item {
+    cursor: pointer;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    transition: 0.3s;
+}
+
+/* List Item Hover */
+.list-group-item:hover {
+    background-color: #e9ecef;
+    transform: scale(1.02);
+}
+
+/* 🖼️ Shadow Effect for Elements */
+.shadow-sm {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ⬇️ Responsive Design */
+@media (max-width: 768px) {
+    .chat-box {
+        height: 300px;
+    }
+
+    .exit-button {
+        font-size: 30px;
+    }
+}

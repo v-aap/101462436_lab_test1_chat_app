@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Group Chat</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container mt-4 chat-container">
+        <button id="exitChat" class="exit-button">&times;</button>
+        
+        <div class="row">
+          <!-- Group Messages -->
+          <div class="col-md-9">
+            <h3>Group Chat: <span id="chatRoom"></span></h3>
+            <div id="chatWindow" class="chat-box"></div>
+            
+            <form id="messageForm" class="mt-2">
+              <div class="input-group">
+                <input type="text" id="messageInput" class="form-control" placeholder="Type a message..." autocomplete="off">
+                <div class="input-group-append">
+                  <button type="submit" class="btn btn-primary">Send</button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Group Members Sidebar -->
+          <div class="col-md-3">
+            <h4>Members</h4>
+            <ul id="memberList" class="list-group"></ul>
+          </div>
+        </div>
+    </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script>
+    const socket = io();
+    const urlParams = new URLSearchParams(window.location.search);
+    const chatRoom = urlParams.get('room');
+    $('#chatRoom').text(chatRoom);
+
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    // Function to format date
+    function formatDate(dateString) {
+      return new Date(dateString).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    // Function to format time
+    function formatTime(dateString) {
+      return new Date(dateString).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: true });
+    }
+
+    // Function to render group messages like private ones
+    function renderMessage(msg, isSender) {
+      const formattedDate = formatDate(msg.date_sent);
+      const formattedTime = formatTime(msg.date_sent);
+
+      const lastMessageDate = $('#chatWindow').attr('data-last-date');
+      if (lastMessageDate !== formattedDate) {
+        $('#chatWindow').append(`<div class="chat-date">${formattedDate}</div>`);
+        $('#chatWindow').attr('data-last-date', formattedDate);
+      }
+
+      const messageContainerClass = isSender ? "message-container sent" : "message-container received";
+      const messageClass = isSender ? "message sent" : "message received";
+
+      $('#chatWindow').append(`
+        <div class="${messageContainerClass}">
+          <div class="message-meta">
+            <span class="username">${msg.from_user}</span>
+            <span class="message-time">${formattedTime}</span>
+          </div>
+          <div class="${messageClass}">${msg.message}</div>
+        </div>
+      `);
+
+      $('#chatWindow').scrollTop($('#chatWindow')[0].scrollHeight);
+    }
+
+    // Fetch previous messages
+    $.get(`/api/messages?type=group&room=${chatRoom}`, function(messages) {
+      messages.forEach(msg => {
+        renderMessage(msg, msg.from_user === user.username);
+      });
+    });
+
+    // Join group room and request member list
+    socket.emit('joinRoom', { username: user.username, room: chatRoom });
+
+    // Fetch members in the chat
+    $.get(`/api/groupMembers/${chatRoom}`, function(members) {
+      $('#memberList').empty();
+      members.forEach(member => {
+        $('#memberList').append(`<li class="list-group-item">${member}</li>`);
+      });
+    });
+
+    // Listen for member updates
+    socket.on('updateMembers', function(members) {
+      $('#memberList').empty();
+      members.forEach(member => {
+        $('#memberList').append(`<li class="list-group-item">${member}</li>`);
+      });
+    });
+
+    // Send message
+    $('#messageForm').on('submit', function(e) {
+      e.preventDefault();
+      const messageText = $('#messageInput').val().trim();
+      if (!messageText) return;
+
+      const messageData = {
+        from_user: user.username,
+        room: chatRoom,
+        message: messageText,
+        date_sent: new Date().toISOString()
+      };
+
+      socket.emit('chatMessage', messageData);
+      renderMessage(messageData, true);
+      $('#messageInput').val('');
+    });
+
+    // Receive messages in real-time
+    socket.on('message', function(data) {
+      renderMessage(data, data.from_user === user.username);
+    });
+
+   // Exit chat when "X" is clicked
+   $('#exitChat').on('click', function() {
+    const chatRoom = urlParams.get('room') || urlParams.get('user'); 
+    if (chatRoom) {
+        socket.emit('leaveRoom', { username: user.username, room: chatRoom });
+    }
+
+    window.location.href = '/index.html'; 
+});
+
+
+
+
+  </script>
+</body>
+</html>
