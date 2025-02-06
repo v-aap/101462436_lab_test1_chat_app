@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const GroupMessage = require('../model/GroupMessage'); 
+
 // Get Rooms
 router.get('/groups', async (req, res) => {
   try {

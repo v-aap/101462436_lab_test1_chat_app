@@ -62,16 +62,14 @@ router.get('/', async (req, res) => {
   });
 
 
-  // GET all unique users the logged-in user has chatted with
+  // Users with chats together
   router.get('/privateChats/:username', async (req, res) => {
     try {
       const username = req.params.username;
 
-      // Find all unique users the logged-in user has chatted with
       const sentChats = await PrivateMessage.distinct("to_user", { from_user: username });
       const receivedChats = await PrivateMessage.distinct("from_user", { to_user: username });
 
-      // Merge and remove duplicates
       const uniqueChats = [...new Set([...sentChats, ...receivedChats])];
 
       res.status(200).json(uniqueChats);

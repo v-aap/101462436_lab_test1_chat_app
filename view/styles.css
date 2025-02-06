@@ -1,10 +1,8 @@
-/* 🌟 General Styles */
 body {
     background-color: #f8f9fa;
     font-family: Arial, sans-serif;
 }
 
-/* Centered Header */
 h2 {
     font-size: 28px;
     font-weight: bold;
@@ -12,13 +10,11 @@ h2 {
     margin-bottom: 20px;
 }
 
-/* 🎨 Chat List Styling */
 .list-group {
     border-radius: 10px;
     overflow: hidden;
 }
 
-/* Chat Items */
 .chat-item {
     display: flex;
     justify-content: space-between;
@@ -31,20 +27,17 @@ h2 {
     cursor: pointer;
 }
 
-/* Hover Effect */
 .chat-item:hover {
     background-color: #e9ecef;
     transform: scale(1.02);
 }
 
-/* Arrow Icons */
 .arrow-icon {
     font-size: 20px;
     font-weight: bold;
     color: #007bff;
 }
 
-/* 🔹 Input Fields & Select Dropdown */
 input, select {
     border-radius: 8px;
     padding: 10px;
@@ -52,21 +45,18 @@ input, select {
     width: 100%;
 }
 
-/* 🔘 Buttons */
 .btn {
     border-radius: 8px;
     padding: 10px 15px;
     font-size: 16px;
 }
 
-/* Logout Button */
 #logoutBtn {
     font-size: 16px;
     padding: 8px 15px;
     border-radius: 8px;
 }
 
-/* 📌 Ensure Button & Inputs Alignment */
 .input-group {
     display: flex;
     align-items: center;
@@ -76,7 +66,6 @@ input, select {
     flex: 1;
 }
 
-/* 📝 Chat Box */
 .chat-box {
     height: 400px;
     overflow-y: auto;
@@ -88,7 +77,6 @@ input, select {
     border: 1px solid #ccc;
 }
 
-/* 💬 Message Bubbles */
 .message-container {
     display: flex;
     flex-direction: column;
@@ -104,18 +92,15 @@ input, select {
     margin-bottom: 5px;
 }
 
-/* ✅ Bold username */
 .username {
     font-weight: bold;
 }
 
-/* ✅ Style time */
 .message-time {
     font-size: 14px;
     color: #666;
 }
 
-/* ✅ Ensure chat bubble is below username/time */
 .message {
     padding: 10px 15px;
     border-radius: 20px;
@@ -125,7 +110,6 @@ input, select {
     font-size: 16px;
 }
 
-/* Sent Messages (left-aligned) */
 .message-container.sent {
     align-items: flex-end;
 }
@@ -135,7 +119,6 @@ input, select {
     color: white;
 }
 
-/* Received Messages (right-aligned) */
 .message-container.received {
     align-items: flex-start;
 }
@@ -145,7 +128,6 @@ input, select {
     color: black;
 }
 
-/* 📅 Date Separator */
 .chat-date {
     text-align: center;
     font-size: 14px;
@@ -154,16 +136,14 @@ input, select {
     font-weight: bold;
 }
 
-/* 🔧 Chat Container */
 .chat-container {
     position: relative;
     padding-top: 10px;
 }
 
-/* ❌ Exit Button - Adjusted Properly */
 .exit-button {
     position: absolute;
-    top: 5px; /* ✅ Adjusted for better alignment */
+    top: 5px; 
     right: 15px;
     background: none;
     border: none;
@@ -175,19 +155,16 @@ input, select {
     z-index: 1000;
 }
 
-/* Exit Button Hover Effect */
 .exit-button:hover {
     color: red;
 }
 
-/* ✅ Bold Group Chat Name */
 .group-chat-title {
     font-weight: bold;
     font-size: 24px;
     margin-bottom: 10px;
 }
 
-/* 📜 Rounded List Items */
 .list-group-item {
     cursor: pointer;
     border-radius: 10px;
@@ -195,18 +172,15 @@ input, select {
     transition: 0.3s;
 }
 
-/* List Item Hover */
 .list-group-item:hover {
     background-color: #e9ecef;
     transform: scale(1.02);
 }
 
-/* 🖼️ Shadow Effect for Elements */
 .shadow-sm {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* ⬇️ Responsive Design */
 @media (max-width: 768px) {
     .chat-box {
         height: 300px;
@@ -215,4 +189,33 @@ input, select {
     .exit-button {
         font-size: 30px;
     }
+}
+
+.typing-bubble {
+    background-color: #e5e5ea;
+    color: black;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 15px;
+    display: inline-block;
+    margin: 5px 0;
+    opacity: 0.8;
+}
+
+.typing-bubble {
+    font-size: 14px;
+    color: #666;
+    padding: 5px 10px;
+    background-color: #e9ecef;
+    border-radius: 10px;
+    display: inline-block;
+    margin: 5px;
+}
+
+.system-message {
+    text-align: center;
+    font-size: 14px;
+    color: #777;
+    margin: 10px 0;
+    font-style: italic;
 }

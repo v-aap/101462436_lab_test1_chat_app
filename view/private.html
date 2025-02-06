@@ -1,67 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Private Chat</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="styles.css"> 
+    <meta charset="UTF-8">
+    <title>Private Chat</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-  <div class="container mt-4 chat-container">
-    <button id="exitChat" class="exit-button">&times;</button> 
+    <div class="container mt-4 chat-container">
+        <button id="exitChat" class="exit-button">&times;</button>
 
-    <h3>Chat with <span id="chatUser"></span></h3>
-    
-    <div id="chatWindow" class="chat-box"></div> 
+        <h3>Chat with <span id="chatUser"></span></h3>
 
-    <form id="messageForm" class="mt-2">
-      <div class="input-group">
-        <input type="text" id="messageInput" class="form-control" placeholder="Type a message..." autocomplete="off">
-        <div class="input-group-append">
-          <button type="submit" class="btn btn-primary">Send</button>
+        <div id="chatWindow" class="chat-box">
+            <div id="typingIndicator" class="typing-bubble" style="display: none;">
+                <span id="typingUser"></span> is typing...
+            </div>
+
         </div>
-      </div>
-    </form>
-  </div>
 
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
+        <form id="messageForm" class="mt-2">
+            <div class="input-group">
+                <input type="text" id="messageInput" class="form-control" placeholder="Type a message..."
+                    autocomplete="off">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary">Send</button>
+                </div>
+            </div>
+        </form>
+    </div>
 
-  <script>
-    const socket = io();
-    const urlParams = new URLSearchParams(window.location.search);
-    const chatUser = urlParams.get('user');
-    $('#chatUser').text(chatUser);
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
 
-    const user = JSON.parse(localStorage.getItem('user'));
+    <script>
+        const socket = io();
+        const urlParams = new URLSearchParams(window.location.search);
+        const chatUser = urlParams.get('user');
+        const typingIndicator = document.getElementById("typingIndicator");
+        const typingUser = document.getElementById("typingUser");
+        let typingTimer;
 
-    // Function to format date (e.g., "February 5, 2025")
-    function formatDate(dateString) {
-    return new Date(dateString).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
-    }
+        $('#chatUser').text(chatUser);
 
-    // Function to format time (e.g., "10:30 PM")
-    function formatTime(dateString) {
-    return new Date(dateString).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: true });
-    }
+        const user = JSON.parse(localStorage.getItem('user'));
 
-    // Function to render a chat message
-    function renderMessage(msg, isSender) {
-    const formattedDate = formatDate(msg.date_sent);
-    const formattedTime = formatTime(msg.date_sent);
+        // Date
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+        }
 
-    // Insert a date separator if a new day starts
-    const lastMessageDate = $('#chatWindow').attr('data-last-date');
-    if (lastMessageDate !== formattedDate) {
-        $('#chatWindow').append(`<div class="chat-date">${formattedDate}</div>`);
-        $('#chatWindow').attr('data-last-date', formattedDate);
-    }
+        // Time
+        function formatTime(dateString) {
+            return new Date(dateString).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: true });
+        }
 
-    // Determine message class
-    const messageContainerClass = isSender ? "message-container sent" : "message-container received";
-    const messageClass = isSender ? "message sent" : "message received";
+        // Messages
+        function renderMessage(msg, isSender) {
+            const formattedDate = formatDate(msg.date_sent);
+            const formattedTime = formatTime(msg.date_sent);
 
-    $('#chatWindow').append(`
+            // New Day
+            const lastMessageDate = $('#chatWindow').attr('data-last-date');
+            if (lastMessageDate !== formattedDate) {
+                $('#chatWindow').append(`<div class="chat-date">${formattedDate}</div>`);
+                $('#chatWindow').attr('data-last-date', formattedDate);
+            }
+
+            const messageContainerClass = isSender ? "message-container sent" : "message-container received";
+            const messageClass = isSender ? "message sent" : "message received";
+
+            $('#chatWindow').append(`
         <div class="${messageContainerClass}">
         <div class="message-meta">
             <span class="username">${msg.from_user}</span>
@@ -71,50 +82,72 @@
         </div>
     `);
 
-    $('#chatWindow').scrollTop($('#chatWindow')[0].scrollHeight); // Auto-scroll
-    }
+            $('#chatWindow').scrollTop($('#chatWindow')[0].scrollHeight);
+        }
 
-    // Fetch previous messages
-    $.get(`/api/messages?type=private&from_user=${user.username}&to_user=${chatUser}`, function(messages) {
-      messages.forEach(msg => {
-        renderMessage(msg, msg.from_user === user.username);
-      });
-    });
+        // Fetch previous messages
+        $.get(`/api/messages?type=private&from_user=${user.username}&to_user=${chatUser}`, function (messages) {
+            messages.forEach(msg => {
+                renderMessage(msg, msg.from_user === user.username);
+            });
+        });
 
-    // Send a message and display instantly
-    $('#messageForm').on('submit', function(e) {
-      e.preventDefault();
-      const messageText = $('#messageInput').val().trim();
-      if (!messageText) return;
+        // Instant Message
+        $('#messageForm').on('submit', function (e) {
+            e.preventDefault();
+            const messageText = $('#messageInput').val().trim();
+            if (!messageText) return;
 
-      const messageData = {
-        from_user: user.username,
-        to_user: chatUser,
-        message: messageText,
-        date_sent: new Date().toISOString() // Send ISO format to keep consistency
-      };
+            const messageData = {
+                from_user: user.username,
+                to_user: chatUser,
+                message: messageText,
+                date_sent: new Date().toISOString()
+            };
 
-      socket.emit('privateMessage', messageData);
-      renderMessage(messageData, true); // Show the message instantly
-      $('#messageInput').val('');
-    });
+            socket.emit('privateMessage', messageData);
+            renderMessage(messageData, true);
+            $('#messageInput').val('');
+        });
 
-    // Receive messages in real-time
-    socket.on('privateMessage', function(data) {
-      if (data.from_user === chatUser || data.to_user === chatUser) {
-        renderMessage(data, data.from_user === user.username);
-      }
-    });
+        // Receive messages 
+        socket.on('privateMessage', function (data) {
+            if (data.from_user === chatUser || data.to_user === chatUser) {
+                renderMessage(data, data.from_user === user.username);
+            }
+        });
 
-    // Exit chat button
-    $('#exitChat').on('click', function() {
-    const chatRoom = urlParams.get('room') || urlParams.get('user'); 
-    if (chatRoom) {
-        socket.emit('leaveRoom', { username: user.username, room: chatRoom });
-    }
+        // Typing
+        $('#messageInput').on('input', function () {
+            socket.emit('typing', { username: user.username, to_user: chatUser });
 
-    window.location.href = '/index.html'; 
-});
-  </script>
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => {
+                socket.emit('stopTyping', { to_user: chatUser });
+            }, 2000);
+        });
+
+
+        socket.on('userTyping', function (data) {
+            $('#typingUser').text(data.username);
+            $('#typingIndicator').show();
+        });
+
+
+        socket.on('userStoppedTyping', function () {
+            $('#typingIndicator').hide();
+        });
+
+        // Exit chat button
+        $('#exitChat').on('click', function () {
+            const chatRoom = urlParams.get('room') || urlParams.get('user');
+            if (chatRoom) {
+                socket.emit('leaveRoom', { username: user.username, room: chatRoom });
+            }
+
+            window.location.href = '/index.html';
+        });
+    </script>
 </body>
+
 </html>

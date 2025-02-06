@@ -6,9 +6,6 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
 
-const User = require('./model/User');
-const GroupMessage = require('./model/GroupMessage');
-const PrivateMessage = require('./model/PrivateMessage');
 const userRoutes = require('./routes/userRoutes');
 const chatRoutes = require('./routes/chat');
 const groupRoutes = require('./routes/groupRoutes');

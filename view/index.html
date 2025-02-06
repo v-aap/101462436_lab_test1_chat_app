@@ -10,7 +10,6 @@
   <div class="container mt-4">
     <h2 class="text-center">Welcome to Chat App</h2>
 
-    <!-- Logout Button -->
     <button id="logoutBtn" class="btn btn-danger float-right">Logout</button>
 
     <div class="row mt-4">
@@ -26,7 +25,7 @@
 
         <h4>Existing Rooms</h4>
         <ul id="groupList" class="list-group rounded shadow-sm">
-          <!-- Groups will be inserted here -->
+          <!-- Rooms -->
         </ul>
       </div>
 
@@ -44,7 +43,7 @@
 
         <h4 class="mt-4">Your Chats</h4>
         <ul id="privateChatList" class="list-group rounded shadow-sm">
-          <!-- Private chats will be inserted here dynamically -->
+          <!-- Chats -->
         </ul>
       </div>
     </div>
@@ -60,13 +59,13 @@
         window.location.href = '/login.html'; 
       }
 
-      // Logout function
+      // Logout 
       $('#logoutBtn').on('click', function() {
         localStorage.removeItem('user');
         window.location.href = '/login.html';
       });
 
-      // Fetch existing groups
+      // Existing Rooms
       $.get('/api/groups', function(groups) {
         const uniqueGroups = [...new Set(groups)];
         $('#groupList').empty();
@@ -80,14 +79,14 @@
         });
       });
 
-      // Fetch users for private chat
+      // Users to Chat
       $.get('/api/users', function(users) {
         users.forEach(user => {
           $('#userDropdown').append(`<option value="${user.username}">${user.username}</option>`);
         });
       });
 
-      // Fetch existing private chats
+      // Existing Chats
       if (user && user.username) {
         $.get(`/api/users/privateChats/${user.username}`, function(privateChats) {
           $('#privateChatList').empty(); 
@@ -102,20 +101,20 @@
         });
       }
 
-      // Open a private chat
+      // Open Chat
       $(document).on('click', '.private-chat-item', function() {
         const selectedUser = $(this).data('chat');
         window.location.href = `/private.html?user=${selectedUser}`;
       });
 
-      // Start private chat
+      // Start Chat
       $('#startPrivateChatBtn').on('click', function() {
         const selectedUser = $('#userDropdown').val();
         if (!selectedUser) return alert('Select a user first.');
         window.location.href = `/private.html?user=${selectedUser}`;
       });
 
-      // Redirect to group chat
+      // Group Chat
       $(document).on('click', '.group-item', function() {
         const groupName = $(this).data('chat');
         window.location.href = `/group.html?room=${groupName}`;
