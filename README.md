@@ -32,8 +32,9 @@ This is a **real-time chat application** built using **Node.js, Express, Socket.
 ```bash
 git clone https://github.com/yourusername/chat-app.git
 cd chat-app
+```
 
-🎯 Usage Guide
+### 🎯 Usage Guide
 🔹 User Registration & Login
 Users are stored in MongoDB and authenticated via local storage.
 Passwords are securely hashed using bcrypt.
